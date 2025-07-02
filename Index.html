@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Device Data Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background-color: #f4f8fb;
+    }
+    h1 {
+      color: #2b5dab;
+    }
+    .data-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .data-item {
+      margin-bottom: 15px;
+    }
+    .label {
+      font-weight: bold;
+      color: #444;
+    }
+    .value {
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Device Sensor Data</h1>
+  <div class="data-container" id="data-container">
+    Loading data...
+  </div>
+
+  <script>
+    const container = document.getElementById('data-container');
+
+    fetch('https://qsh6ornnqxfn4ryi77dsy3sxyi0cbrsb.lambda-url.eu-north-1.on.aws/?device_id=223')
+      .then(response => response.json())
+      .then(data => {
+        const sensor = data.payload;
+
+        container.innerHTML = `
+          <div class="data-item"><span class="label">Device ID:</span> <span class="value">${data.device_id}</span></div>
+          <div class="data-item"><span class="label">Temperature:</span> <span class="value">${sensor.temprature} °C</span></div>
+          <div class="data-item"><span class="label">TDS:</span> <span class="value">${sensor.tds} ppm</span></div>
+          <div class="data-item"><span class="label">pH Level:</span> <span class="value">${sensor.ph.toFixed(2)}</span></div>
+          <div class="data-item"><span class="label">Filter Health:</span> <span class="value">${sensor.filter_health}/10</span></div>
+          <div class="data-item"><span class="label">Flow Rate:</span> <span class="value">${sensor.flow.toFixed(2)} L/min</span></div>
+          <div class="data-item"><span class="label">Timestamp:</span> <span class="value">${new Date(sensor.timestamp).toLocaleString()}</span></div>
+        `;
+      })
+      .catch(error => {
+        container.innerHTML = `<p style="color: red;">Error fetching data: ${error.message}</p>`;
+      });
+  </script>
+
+</body>
+</html>
